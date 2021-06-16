@@ -1,13 +1,14 @@
 % To get a grasp on the distributions of parametric modulators entering second level analyses,
 % this function compiles pmods from the respective first level. 
 %
-% T = GetPModDistributions(anaPath_L2)
+% [T,TRes] = GetPModDistributions(anaPath_L2)
 % anaPath_L2    - path to second level SPM, expects the first levels to be available at SPM.xY.P.
 %
 % out
 % T             - table with all desired parameters (e.g. min, max, mean, std)
+% TRes          - table with the mean of all desired parameters
 %
-% T = GetPModDistributions(baseDir,anaName,allSbs) % may require some fiddling in GetL1Synthesize subfunction 
+% [T,TRes] = GetPModDistributions(baseDir,anaName,allSbs) % may require some fiddling in GetL1Synthesize subfunction 
 %                                                    according to project folder structure
 % baseDir       - path to root folder of first level results (i.e. one above subject folder)
 % anaName       - name of your analysis in subject folder
@@ -15,6 +16,7 @@
 %
 % out
 % T             - table with all desired parameters (e.g. min, max, mean, std)
+% TRes          - table with the mean of all desired parameters
 %
 % Version: 1.1
 % Author: Björn Horing, bjoern.horing@gmail.com
@@ -24,7 +26,7 @@
 % 1.1
 % - function description, comments for Git; removed localized defaults
 
-function T = GetPModDistributions(varargin)
+function [T,TRes] = GetPModDistributions(varargin)
 
     % some hardcoded stuff, don't want to overburden the varargin here...
     NR = 1; % index of the regressor of interest
@@ -74,6 +76,9 @@ function T = GetPModDistributions(varargin)
         fprintf('done.\n');
     end
     warning('on');   
+    
+    TRes = table(T.Properties.VariableNames(4:end)',mean(T{:,4:end})');
+    TRes.Properties.VariableNames = {'ParameterName','Mean'};
 
     
 function anaPath_L1 = GetL1FromL2(anaPath_L2) % obtain L1 paths top-down through L2 analysis (lazy!)
